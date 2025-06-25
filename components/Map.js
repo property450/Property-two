@@ -126,3 +126,41 @@ export default function Map() {
           placeholder={`🔍 ${t[lang].searchPlaceholder}`}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          style={{ padding: '10px', width: '60%', fontSize: '16px', borderRadius: '8px', border: '1px solid #ccc', marginBottom: '10px' }}
+        />
+        <button onClick={handleLocationSearch} style={{ padding: '10px 15px', marginLeft: '10px' }}>
+          {t[lang].locate}
+        </button>
+        <div style={{ marginTop: '10px' }}>
+          📍 {t[lang].distance}:
+          <input type="number" value={range} onChange={(e) => setRange(Number(e.target.value))} style={{ width: '60px', margin: '0 10px' }} />
+          💰 {t[lang].price}: 
+          RM <input type="number" value={minPrice} onChange={(e) => setMinPrice(Number(e.target.value))} style={{ width: '80px', margin: '0 5px' }} />
+          - RM <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))} style={{ width: '80px', margin: '0 5px' }} />
+        </div>
+      </div>
+
+      <MapContainer center={[center.lat, center.lng]} zoom={12} scrollWheelZoom={true} style={{ height: '500px', width: '100%' }}>
+        <TileLayer
+          attribution='&copy; OpenStreetMap contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <FlyTo lat={center.lat} lng={center.lng} />
+        {filtered.map((house) => (
+          <Marker key={house.id} position={[house.lat, house.lng]}>
+            <Popup maxWidth={300}>
+              <div style={{ textAlign: 'center' }}>
+                <img src={house.img} alt={house.name} style={{ width: '100%', borderRadius: '6px', marginBottom: '5px' }} />
+                <strong>{house.name}</strong><br />
+                RM{house.price.toLocaleString()}<br />
+                <a href={house.link} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', marginTop: '5px', color: 'blue' }}>
+                  🔗 {t[lang].more}
+                </a>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
+  );
+}
