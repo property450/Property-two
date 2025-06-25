@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { createClient } from '@supabase/supabase-js';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -10,38 +11,12 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-// 房子数据（含图片和链接）
-const houseList = [
-  {
-    id: 1,
-    name: 'Eco Park',
-    lat: 3.100,
-    lng: 101.600,
-    price: 320000,
-    img: 'https://placehold.co/300x150?text=Eco+Park',
-    link: 'https://example.com/property/eco'
-  },
-  {
-    id: 2,
-    name: 'Bukit Indah',
-    lat: 3.150,
-    lng: 101.650,
-    price: 500000,
-    img: 'https://placehold.co/300x150?text=Bukit+Indah',
-    link: 'https://example.com/property/bukit-indah'
-  },
-  {
-    id: 3,
-    name: 'Taman Desa',
-    lat: 3.120,
-    lng: 101.620,
-    price: 750000,
-    img: 'https://placehold.co/300x150?text=Taman+Desa',
-    link: 'https://example.com/property/taman-desa'
-  }
-];
+// 替换成你的 Supabase 项目信息
+const supabaseUrl = 'https://rkvhsodjddywomrjwywd.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrdmhzb2RqZGR5d29tcmp3eXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NDM2ODIsImV4cCI6MjA2NjQxOTY4Mn0.3I6C8aE8wJqBV-_mKbaQzw1G-MPzkergOv-0KxSkT44';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-// 计算距离
+// 计算两点距离
 function getDistance(lat1, lng1, lat2, lng2) {
   const toRad = (value) => (value * Math.PI) / 180;
   const R = 6371;
@@ -55,7 +30,6 @@ function getDistance(lat1, lng1, lat2, lng2) {
   return R * c;
 }
 
-// 地图定位
 function FlyTo({ lat, lng }) {
   const map = useMap();
   map.flyTo([lat, lng], 13);
@@ -63,12 +37,13 @@ function FlyTo({ lat, lng }) {
 }
 
 export default function Map() {
+  const [properties, setProperties] = useState([]);
   const [search, setSearch] = useState('');
   const [range, setRange] = useState(10);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(1000000);
   const [center, setCenter] = useState({ lat: 3.12, lng: 101.62 });
-  const [lang, setLang] = useState('en'); // 当前语言
+  const [lang, setLang] = useState('en');
 
   const t = {
     en: {
@@ -89,7 +64,19 @@ export default function Map() {
     }
   };
 
-  const filtered = houseList.filter((house) => {
+  useEffect(() => {
+    async function fetchProperties() {
+      const { data, error } = await supabase.from('properties').select('*');
+      if (error) {
+        console.error('Error fetching data:', error);
+      } else {
+        setProperties(data);
+      }
+    }
+    fetchProperties();
+  }, []);
+
+  const filtered = properties.filter((house) => {
     const distance = getDistance(center.lat, center.lng, house.lat, house.lng);
     return (
       house.name.toLowerCase().includes(search.toLowerCase()) &&
@@ -112,14 +99,12 @@ export default function Map() {
 
   return (
     <div>
-      {/* 顶部语言切换 */}
       <div style={{ textAlign: 'right', padding: '10px 20px' }}>
         <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}>
           🌐 {t[lang].langSwitch}
         </button>
       </div>
 
-      {/* 搜索栏和筛选 */}
       <div style={{ textAlign: 'center', marginBottom: '10px' }}>
         <input
           type="text"
