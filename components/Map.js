@@ -11,12 +11,10 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-// 替换成你的 Supabase 项目信息
 const supabaseUrl = 'https://rkvhsodjddywomrjwywd.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrdmhzb2RqZGR5d29tcmp3eXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NDM2ODIsImV4cCI6MjA2NjQxOTY4Mn0.3I6C8aE8wJqBV-_mKbaQzw1G-MPzkergOv-0KxSkT44';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// 计算两点距离
 function getDistance(lat1, lng1, lat2, lng2) {
   const toRad = (value) => (value * Math.PI) / 180;
   const R = 6371;
@@ -119,7 +117,7 @@ export default function Map() {
         <div style={{ marginTop: '10px' }}>
           📍 {t[lang].distance}:
           <input type="number" value={range} onChange={(e) => setRange(Number(e.target.value))} style={{ width: '60px', margin: '0 10px' }} />
-          💰 {t[lang].price}: 
+          💰 {t[lang].price}:
           RM <input type="number" value={minPrice} onChange={(e) => setMinPrice(Number(e.target.value))} style={{ width: '80px', margin: '0 5px' }} />
           - RM <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))} style={{ width: '80px', margin: '0 5px' }} />
         </div>
