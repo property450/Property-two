@@ -1,8 +1,8 @@
+import { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-// 修复默认图标问题
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -17,25 +17,50 @@ const houseList = [
 ];
 
 export default function Map() {
+  const [search, setSearch] = useState('');
+
+  const filteredHouses = houseList.filter(house =>
+    house.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <MapContainer
-      center={[3.12, 101.62]}
-      zoom={12}
-      scrollWheelZoom={true}
-      style={{ height: '500px', width: '100%' }}
-    >
-      <TileLayer
-        attribution='&copy; OpenStreetMap contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      {houseList.map((house) => (
-        <Marker key={house.id} position={[house.lat, house.lng]}>
-          <Popup>
-            <strong>{house.name}</strong><br />
-            {house.price}
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+    <div>
+      <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+        <input
+          type="text"
+          placeholder="🔍 输入房产名称（如 Eco）"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            padding: '10px',
+            width: '80%',
+            maxWidth: '400px',
+            fontSize: '16px',
+            borderRadius: '8px',
+            border: '1px solid #ccc'
+          }}
+        />
+      </div>
+
+      <MapContainer
+        center={[3.12, 101.62]}
+        zoom={12}
+        scrollWheelZoom={true}
+        style={{ height: '500px', width: '100%' }}
+      >
+        <TileLayer
+          attribution='&copy; OpenStreetMap contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        {filteredHouses.map((house) => (
+          <Marker key={house.id} position={[house.lat, house.lng]}>
+            <Popup>
+              <strong>{house.name}</strong><br />
+              {house.price}
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
   );
 }
