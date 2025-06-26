@@ -1,5 +1,3 @@
-// ✅ Layout.js 页面（或你的导航栏组件）
-
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
@@ -23,35 +21,22 @@ export default function Layout({ children }) {
 
   return (
     <div>
-      <nav className="flex justify-between items-center bg-gray-800 text-white px-6 py-4">
-        <Link href="/">
-          <span className="font-bold text-xl cursor-pointer">🏠 PropertyMap</span>
-        </Link>
-        <div className="space-x-4">
-          {user ? (
-            <>
-              <Link href="/Upload">
-                <span className="hover:underline cursor-pointer">上传房源</span>
-              </Link>
-              <Link href="/Favorites">
-                <span className="hover:underline cursor-pointer">我的收藏</span>
-              </Link>
-              <button onClick={handleLogout} className="hover:underline">登出</button>
-            </>
-          ) : (
-            <>
-              <Link href="/Login">
-                <span className="hover:underline cursor-pointer">登录</span>
-              </Link>
-              <Link href="/Register">
-                <span className="hover:underline cursor-pointer">注册</span>
-              </Link>
-            </>
-          )}
-        </div>
+      <nav>
+        <Link href="/">🏠 首页</Link>
+        {user ? (
+          <>
+            <Link href="/Upload">上传房源</Link>
+            <Link href="/Favorites">我的收藏</Link>
+            <button onClick={handleLogout}>登出</button>
+          </>
+        ) : (
+          <>
+            <Link href="/Login">登录</Link>
+            <Link href="/Register">注册</Link>
+          </>
+        )}
       </nav>
-
-      <main className="p-4">{children}</main>
+      <main>{children}</main>
     </div>
   );
 }
